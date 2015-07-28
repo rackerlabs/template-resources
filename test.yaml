@@ -8,6 +8,9 @@ parameters:
   image:
     type: string
 
+  config:
+    type: string
+
 resources:
 
   server_pw:
@@ -24,7 +27,11 @@ resources:
       user_data_format: SOFTWARE_CONFIG
 
   config:
-    type: 
+    type: { get_param: config }
+    properties:
+      servers:
+        - { get_attr: [ server, name ] }
+          { get_attr: [ server, show, id ] }
 
 outputs:
   server_ip:

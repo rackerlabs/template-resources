@@ -6,7 +6,7 @@ description: |
 parameters:
 
   servers:
-    type: string
+    type: map
 
 resources:
 
