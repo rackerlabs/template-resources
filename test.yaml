@@ -5,10 +5,7 @@ description: |
 
 parameters:
 
-  image:
-    type: string
-
-  config:
+  image:  # it must have the SoftwareConfig agent baked-in
     type: string
 
 resources:
@@ -27,11 +24,10 @@ resources:
       user_data_format: SOFTWARE_CONFIG
 
   config:
-    type: { get_param: config }
+    type: nginx.yaml
     properties:
       servers:
-      - get_attr: [ server, name ]
-        get_attr: [ server, show, id ]
+        'server1': { get_attr: [ server, show, id ] }
 
 outputs:
   server_ip:
