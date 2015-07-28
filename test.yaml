@@ -1,0 +1,37 @@
+heat_template_version: 2014-10-16
+
+description: |
+  This template is for testing child templates with
+
+parameters:
+
+  image:
+    type: string
+
+resources:
+
+  server_pw:
+    type: OS::Heat::RandomString
+
+  server:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      admin_pass: { get_attr: [ server_pw, value ] }
+      flavor: 2 GB Performance
+      software_config_transport: POLL_TEMP_URL
+      config_drive: true
+      user_data_format: SOFTWARE_CONFIG
+
+  config:
+    type: 
+
+outputs:
+  server_ip:
+    description: Server IP Address
+    value:
+      get_attr: [ server, accessIPv4 ]
+  server_password:
+    description: Server Password
+    value:
+      get_attr: [ server_pw, value ]
