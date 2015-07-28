@@ -30,8 +30,8 @@ resources:
     type: { get_param: config }
     properties:
       servers:
-        - { get_attr: [ server, name ] }
-          { get_attr: [ server, show, id ] }
+      - get_attr: [ server, name ]
+        get_attr: [ server, show, id ]
 
 outputs:
   server_ip:
