@@ -21,7 +21,7 @@ resources:
           hosts: localhost
           tasks:
            - name: Install Nginx
-             package: name=nginx state=installed update_cache=true
+             apt: pkg=nginx state=installed update_cache=true
              notify:
               - Start Nginx
           handlers:
