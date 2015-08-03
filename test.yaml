@@ -13,7 +13,7 @@ resources:
   server_pw:
     type: OS::Heat::RandomString
 
-  server:
+  server1:
     type: OS::Nova::Server
     properties:
       image: { get_param: image }
@@ -23,11 +23,28 @@ resources:
       config_drive: true
       user_data_format: SOFTWARE_CONFIG
 
-  config:
+  config1:
     type: nginx.yaml
     properties:
       servers:
-        'server1': { get_attr: [ server, show, id ] }
+        'server1': { get_attr: [ server1, show, id ] }
+
+  server2:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      admin_pass: { get_attr: [ server_pw, value ] }
+      flavor: 2 GB Performance
+      software_config_transport: POLL_TEMP_URL
+      config_drive: true
+      user_data_format: SOFTWARE_CONFIG
+
+  config1:
+    type: generic.yaml
+    properties:
+      servers:
+        'server2': { get_attr: [ server2, show, id ] }
+      package: nginx
 
 outputs:
   server_ip:
