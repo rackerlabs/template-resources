@@ -47,10 +47,14 @@ resources:
       package: nginx
 
 outputs:
-  server_ip:
-    description: Server IP Address
+  server1_ip:
+    description: Server 1 IP Address
     value:
-      get_attr: [ server, accessIPv4 ]
+      get_attr: [ server1, accessIPv4 ]
+  server1_ip:
+    description: Server 2 IP Address
+    value:
+      get_attr: [ server2, accessIPv4 ]
   server_password:
     description: Server Password
     value:
