@@ -39,7 +39,7 @@ resources:
       config_drive: true
       user_data_format: SOFTWARE_CONFIG
 
-  config1:
+  config2:
     type: generic.yaml
     properties:
       servers:
