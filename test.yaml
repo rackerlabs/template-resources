@@ -13,6 +13,9 @@ resources:
   server_pw:
     type: OS::Heat::RandomString
 
+  bootconfig:
+    type: Heat::InstallConfigAgent
+
   server1:
     type: OS::Nova::Server
     properties:
@@ -22,6 +25,7 @@ resources:
       software_config_transport: POLL_TEMP_URL
       config_drive: true
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_attr: [ bootconfig, config ] }
 
   config1:
     type: nginx.yaml
@@ -38,6 +42,7 @@ resources:
       software_config_transport: POLL_TEMP_URL
       config_drive: true
       user_data_format: SOFTWARE_CONFIG
+      user_data: { get_attr: [ bootconfig, config ] }
 
   config2:
     type: generic.yaml
