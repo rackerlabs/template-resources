@@ -1,0 +1,66 @@
+heat_template_version: 2014-10-16
+
+description: |
+  Install MySQL with Ansible
+
+parameters:
+
+  servers:
+    type: json
+
+  mysql_pass:
+    type: string
+
+resources:
+
+  mysql_config:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ansible
+      config:
+        str_replace:
+          template: |
+            ---
+            - name: Install and run MySQL
+              connection: local
+              hosts: localhost
+              tasks:
+                - name: Set MySQL root password
+                  shell: debconf-set-selections <<< 'mysql-server mysql-server/root_password password MYSQL_PASSWORD'
+                  args:
+                    executable: /bin/bash
+
+                - name: Confirm MySQL root password
+                  shell: debconf-set-selections <<< 'mysql-server mysql-server/root_password_again password MYSQL_PASSWORD'
+                  args:
+                    executable: /bin/bash
+
+                - name: Install MySQL
+                  apt:
+                    pkg: mysql-server
+                    state: installed
+                    update_cache: true
+
+          params:
+            MYSQL_PASSWORD: { get_param: mysql_pass }
+
+  deploy_mysql:
+    type: OS::Heat::SoftwareDeploymentGroup
+    properties:
+      signal_transport: TEMP_URL_SIGNAL
+      config: { get_resource: mysql_config }
+      servers: { get_param: servers }
+
+outputs:
+  stdout:
+    description: Ansible Output
+    value: { get_attr: [ deploy_mysql, deploy_stdout ] }
+  stderr:
+    description: Ansible Error Output
+    value: { get_attr: [ deploy_mysql, deploy_stderr ] }
+  status_code:
+    description: Exit Code
+    value: { get_attr: [ deploy_mysql, deploy_status_code ] }
+  config:
+    description: MySQL Ansible Playbook
+    value: { get_attr: [ mysql_config, config ] }

@@ -1,0 +1,46 @@
+heat_template_version: 2014-10-16
+
+description: |
+  This template is for testing child templates with
+
+parameters:
+
+  image:  # it must have the SoftwareConfig agent baked-in
+    type: string
+    default: Ubuntu 14.04 LTS (Trusty Tahr) (PVHVM)
+
+resources:
+
+  server_pw:
+    type: OS::Heat::RandomString
+
+  server:
+    type: OS::Nova::Server
+    properties:
+      image: { get_param: image }
+      admin_pass: { get_attr: [ server_pw, value ] }
+      flavor: 2 GB Performance
+      software_config_transport: POLL_TEMP_URL
+      config_drive: true
+      user_data_format: SOFTWARE_CONFIG
+      user_data: { get_attr: [ bootconfig, config ] }
+
+  config:
+    type: mysql.yaml
+    properties:
+      servers:
+        'server1': { get_attr: [ server, show, id ] }
+      mysql_pass: badpassword
+
+  bootconfig:
+    type: Heat::InstallConfigAgent
+
+outputs:
+  server_ip:
+    description: Server IP Address
+    value:
+      get_attr: [ server, accessIPv4 ]
+  server_password:
+    description: Server Password
+    value:
+      get_attr: [ server_pw, value ]
