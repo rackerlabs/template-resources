@@ -1,0 +1,52 @@
+heat_template_version: 2014-10-16
+
+description: |
+  Deploy Apache on a server with Ansible
+
+parameters:
+
+  servers:
+    type: json
+
+resources:
+
+  configure_apache:
+    type: OS::Heat::SoftwareConfig
+    properties:
+      group: ansible
+      config: |
+        ---
+        - name: Install and run Apache
+          connection: local
+          hosts: localhost
+          tasks:
+           - name: Install Apache
+             apt: pkg=apache state=installed update_cache=true
+             notify:
+              - Start Apache
+          handlers:
+           - name: Start Apache
+             service: name=apache state=started
+
+  deploy_apache:
+    type: OS::Heat::SoftwareDeploymentGroup
+    properties:
+      signal_transport: TEMP_URL_SIGNAL
+      config:
+        get_resource: configure_apache
+      servers:
+        get_param: servers
+
+outputs:
+  stdout:
+    description: Ansible Output
+    value:
+      get_attr: [ deploy_apache, deploy_stdout ]
+  stderr:
+    description: Ansible Error Output
+    value:
+      get_attr: [ deploy_apache, deploy_stderr ]
+  status_code:
+    description: Exit Code
+    value:
+      get_attr: [ deploy_apache, deploy_status_code ]
