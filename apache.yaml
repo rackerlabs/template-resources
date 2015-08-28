@@ -21,12 +21,12 @@ resources:
           hosts: localhost
           tasks:
            - name: Install Apache
-             apt: pkg=apache state=installed update_cache=true
+             apt: pkg=apache2 state=installed update_cache=true
              notify:
               - Start Apache
           handlers:
            - name: Start Apache
-             service: name=apache state=started
+             service: name=apache2 state=started
 
   deploy_apache:
     type: OS::Heat::SoftwareDeploymentGroup
